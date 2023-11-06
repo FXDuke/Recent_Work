@@ -53,43 +53,47 @@ public:
     void shiftLeft(int Amount)
     {
 
-        uint64_t ShiftAmount = Amount & 63;
-        uint64_t Dif = 64 - ShiftAmount;
+        if (Amount < 0)
+            return this->shiftRight(-Amount);
 
+        int ShiftAmount = Amount & 63;
+        int Dif = 64 - ShiftAmount;
         Amount >>= 6;
 
-        for (int Index = this->Size-1; Index > -1; Index--)
+        for (int Index = this->Size - 1; Index > -1; Index--)
             this->Storage[Index] = (Index - Amount > -1) ? this->Storage[Index - Amount] : 0;
 
-        if (ShiftAmount == 0)
-            return;
-
-        for (int Index = this->Size-1; Index > -1; Index--)
+        if (ShiftAmount > 0)
         {
-            this->Storage[Index] <<= ShiftAmount;
-            this->Storage[Index] |= (Index - 1 > -1) ? this->Storage[Index - 1]>>Dif : 0;
+            for (int Index = this->Size - 1; Index > -1; Index--)
+            {
+                this->Storage[Index] <<= ShiftAmount;
+                this->Storage[Index] |= (Index - 1 > -1) ? this->Storage[Index - 1] >> Dif : 0;
+            }
         }
 
     }
 
-    void shiftRight(uint64_t Amount)
+    void shiftRight(int Amount)
     {
 
-        uint64_t Remainder = Amount & 63;
-        uint64_t Dif = 64 - Remainder;
+        if (Amount < 0)
+            return this->shiftLeft(-Amount);
 
+        int Remainder = Amount & 63;
+        int Dif = 64 - Remainder;
         Amount >>= 6;
 
-        for (uint64_t Index = 0; Index < this->Size; Index++)
+        for (int Index = 0; Index < this->Size; Index++)
             this->Storage[Index] = (Index+Amount < this->Size) ? this->Storage[Index + Amount] : 0;
         
-        if (Remainder == 0)
-            return;
-
-        for (int Index = 0; Index < this->Size; Index++)
+        if (Remainder > 0)
         {
-            this->Storage[Index] >>= Remainder;
-            this->Storage[Index] |= (Index+1 < this->Size) ? this->Storage[Index + 1] << Dif : 0;
+            for (int Index = 0; Index < this->Size; Index++)
+            {
+                this->Storage[Index] >>= Remainder;
+                this->Storage[Index] |= (Index + 1 < this->Size) ? this->Storage[Index + 1] << Dif : 0;
+            }
         }
     }
 
