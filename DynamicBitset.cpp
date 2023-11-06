@@ -77,6 +77,10 @@ public:
 
     DynamicBitset operator<<(int Amount)
     {
+
+        if (Amount < 0)
+            return operator>>(-Amount);
+
         DynamicBitset Result(Size * i64);
 
         int ShiftAmount = Amount & 63;
@@ -94,6 +98,10 @@ public:
 
     DynamicBitset operator>>(int Amount)
     {
+
+        if (Amount < 0)
+            return operator<<(-Amount);
+
         DynamicBitset Result(Size * i64);
 
         int ShiftAmount = Amount & 63;
@@ -112,6 +120,9 @@ public:
     void operator<<=(int Amount)
     {
 
+        if (Amount < 0)
+            return operator>>=(-Amount);
+
         int ShiftAmount = Amount & 63;
         int Dif = 64 - ShiftAmount;
         Amount >>= 6;
@@ -120,12 +131,15 @@ public:
             Storage[Index] = (Index - Amount > -1) ? Storage[Index - Amount] : 0;
 
         for (int Index = Size - 1; Index > -1; Index--)
-            Storage[Index] = (Storage[Index] << ShiftAmount) | ((Index - 1 > -1) ? Storage[Index - 1] >> Dif : 0);
+            Storage[Index] = (Storage[Index] << ShiftAmount) | ((Index != 0) ? Storage[Index - 1] >> Dif : 0);
 
     }
 
     void operator>>=(int Amount)
     {
+
+        if (Amount < 0)
+            return operator<<=(-Amount);
 
         int ShiftAmount = Amount & 63;
         int Dif = 64 - ShiftAmount;
