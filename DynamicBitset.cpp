@@ -203,6 +203,7 @@ public:
     {
         delete Storage;
         Storage = new uint64_t[1];
+        Size = 1;
     }
 
     bool zero()
