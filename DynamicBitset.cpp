@@ -1,8 +1,5 @@
 #include <iostream>
-#include <vector>
 #include <sstream>
-using namespace std;
-
 const uint64_t mINT64_MAX = 0x7FFFFFFFFFFFFFFF;
 const uint64_t i64 = 64;
 class DynamicBitset {
@@ -200,7 +197,7 @@ public:
     // @Generics
     void resize(uint64_t MaskSize = i64)
     {
-        delete Storage;
+        delete[] Storage;
 
         uint64_t FinalSize = (MaskSize >> 6) + ((MaskSize & 63) > 0);
         Size = FinalSize;
@@ -209,13 +206,13 @@ public:
 
     void clear()
     {
-        delete Storage;
+        delete[] Storage;
         Storage = new uint64_t[Size];
     }
 
     void free()
     {
-        delete Storage;
+        delete[] Storage;
         Storage = new uint64_t[1];
         Size = 1;
     }
@@ -228,13 +225,13 @@ public:
         return true;
     }
 
-    string concat()
+    std::string concat()
     {
-        stringstream Result;
+        std::stringstream Result;
         Result << "0x";
         for (uint64_t Index = Size - 1; Index > 0; Index--)
-            Result << hex << Storage[Index] << "_";
-        Result << hex << Storage[0] << "_";
+            Result << std::hex << Storage[Index] << "_";
+        Result << std::hex << Storage[0] << "_";
         return Result.str();
     }
 
@@ -259,7 +256,7 @@ public:
     // @Constructor
     DynamicBitset(uint64_t MaskSize = i64)
     {
-        delete Storage;
+        delete[] Storage;
         uint64_t FinalSize = (MaskSize >> 6) + ((MaskSize & 63) > 0);
         Size = FinalSize;
         Storage = new uint64_t[FinalSize];
