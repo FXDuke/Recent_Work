@@ -47,7 +47,10 @@ local LoadingBarTweenInfo__Completed = TweenInfo.new(0.75, Enum.EasingStyle.Sine
 local TipChangeTweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Sine);
 local SceenChangeTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Sine);
 local SceenChangeDelay = 0.5;
+local OriginPlaySize = PlayButtonCanvas.Size;
 local CameraSwaySpeed = 0.3;
+local PlayButtonScalarOffset = 0.025;
+local PlayButtonScalarSpeed = 1.9;
 
 for _, v in pairs(Tips) do
 	TipAmount += 1;
@@ -111,6 +114,16 @@ local function ContentLoadedCompleted()
 		-- Enable and fade in play button once bar had faded out
 		TweenService:Create(PlayButtonCanvas, SceenChangeTweenInfo, {GroupTransparency = 0}):Play();
 		TweenService:Create(UpdateLogCanvas, SceenChangeTweenInfo, {GroupTransparency = 0}):Play();
+		
+		-- Grow play button 
+		task.spawn(function()
+			local elapsed = 0;
+			while (active) do 
+				elapsed += RunService.PreRender:Wait();
+				local scalar = 1 + math.sin(elapsed * math.pi * PlayButtonScalarSpeed / 2) * PlayButtonScalarOffset;
+				PlayButtonCanvas.Size = ScaleUDim2(OriginPlaySize, scalar);
+			end
+		end)
 	end)
 	
 	-- Delay and change scene
@@ -229,14 +242,14 @@ local function TipProcedure()
 end
 
 local function PlayButtonClicked()
+	if (loadingbarActive) then return end;
+	if (not active) then return end;
 	TitleScreenClose();
 end
 
 -- Events
 UIS.InputBegan:Connect(function(x, processed)
 	if (processed) then return end;
-	if (loadingbarActive) then return end;
-	if (not active) then return end;
 	PlayButtonClicked();
 end)
 
